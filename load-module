@@ -1,0 +1,2 @@
+#!/bin/sh
+/sbin/insmod ./ko/enable_arm_pmu.ko || exit 1
