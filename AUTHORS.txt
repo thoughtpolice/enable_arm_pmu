@@ -1,3 +1,4 @@
 Author, target of blame:
 
   Austin Seipp <aseipp [@at] pobox [.dot] com>
+  Romain Dolbeau <romain [@at] dolbeau [.dot] org> (aarch64 update)

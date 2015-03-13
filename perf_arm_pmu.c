@@ -19,8 +19,8 @@ loop(int* __restrict__ a, int* __restrict__ b, int n)
 int
 main(int ac, char **av)
 {
-        uint32_t time_start = 0;
-        uint32_t time_end   = 0;
+        uint64_t time_start = 0;
+        uint64_t time_end   = 0;
 
         int *a  = NULL;
         int *b  = NULL;
@@ -40,9 +40,9 @@ main(int ac, char **av)
         }
 
         printf("%s: beginning loop\n", av[0]);
-        time_start = rdtsc32();
+        time_start = rdtsc64();
         sum = loop(a, b, len);
-        time_end   = rdtsc32();
+        time_end   = rdtsc64();
         printf("%s: done. sum = %d; time delta = %u\n", av[0], sum, time_end - time_start);
 
         free(a); free(b);

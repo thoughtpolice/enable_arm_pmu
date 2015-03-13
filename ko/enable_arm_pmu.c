@@ -9,8 +9,8 @@
 
 #define DRVR_NAME "enable_arm_pmu"
 
-#if !defined(__arm__)
-#error Module can only be compiled on ARM machines.
+#if !defined(__aarch64__)
+#error Module can only be compiled on ARM64 machines.
 #endif
 
 /** -- Initialization & boilerplate ---------------------------------------- */
@@ -26,10 +26,12 @@ enable_cpu_counters(void* data)
                 smp_processor_id());
 
         /* Enable user-mode access to counters. */
-        asm volatile("mcr p15, 0, %0, c9, c14, 0" :: "r"(1));
+	asm volatile("msr PMUSERENR_EL0, %0" :: "r"(1));
         /* Program PMU and enable all counters */
-        asm volatile("mcr p15, 0, %0, c9, c12, 0" :: "r"(PERF_DEF_OPTS));
-        asm volatile("mcr p15, 0, %0, c9, c12, 1" :: "r"(0x8000000f));
+	asm volatile("msr PMCR_EL0, %0" :: "r"(PERF_DEF_OPTS));
+        asm volatile("msr PMCNTENSET_EL0, %0" :: "r"(0x8000000f));
+	asm volatile("msr PMCCFILTR_EL0, %0" :: "r"(0));
+
 }
 
 static void
@@ -39,10 +41,10 @@ disable_cpu_counters(void* data)
                 smp_processor_id());
 
         /* Program PMU and disable all counters */
-        asm volatile("mcr p15, 0, %0, c9, c12, 0" :: "r"(0));
-        asm volatile("mcr p15, 0, %0, c9, c12, 2" :: "r"(0x8000000f));
+	asm volatile("msr PMCR_EL0, %0" :: "r"(0));
+        asm volatile("msr PMCNTENSET_EL0, %0" :: "r"(0x8000000f));
         /* Disable user-mode access to counters. */
-        asm volatile("mcr p15, 0, %0, c9, c14, 0" :: "r"(0));
+	asm volatile("msr PMUSERENR_EL0, %0" :: "r"(0));
 }
 
 static int __init
