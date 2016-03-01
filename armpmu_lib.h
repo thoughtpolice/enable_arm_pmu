@@ -4,12 +4,16 @@
 static inline uint32_t
 rdtsc32(void)
 {
-#if defined(__GNUC__) && defined(__ARM_ARCH_7A__)
+#if defined(__GNUC__)
         uint32_t r = 0;
+#if  defined __aarch64__     
+	asm volatile("mrs %0, pmccntr_el0" : "=r" (r)); 
+#elif defined(__ARM_ARCH_7A__)
         asm volatile("mrc p15, 0, %0, c9, c13, 0" : "=r"(r) );
-        return r;
 #else
 #error Unsupported architecture/compiler!
+#endif
+        return r;
 #endif
 }
 
