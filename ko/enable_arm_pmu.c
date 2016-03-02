@@ -62,7 +62,7 @@ enable_cpu_counters(void* data)
 	 * PMINTENSET, Performance Monitors Interrupt Enable Set register */
 	/* cycle counter overflow interrupt request is disabled */
 	asm volatile("msr pmintenset_el1, %0" : : "r" ((u64)(0 << 31)));
-	/*   Performance Monitors Count Enable Set register bit 31:0 disable, 1 enable */
+	/*   Performance Monitors Count Enable Set register bit 30:0 disable, 31 enable */
 	asm volatile("msr pmcntenset_el0, %0" : : "r" (ARMV8_PMCNTENSET_EL0_ENABLE));
 	/* start*/
 	armv8pmu_pmcr_write(armv8pmu_pmcr_read() | ARMV8_PMCR_E);
