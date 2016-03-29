@@ -21,6 +21,8 @@ main(int ac, char **av)
 {
         uint32_t time_start = 0;
         uint32_t time_end   = 0;
+	uint32_t cnt_start = 0;
+	uint32_t cnt_end = 0;
 
         int *a  = NULL;
         int *b  = NULL;
@@ -44,6 +46,14 @@ main(int ac, char **av)
         sum = loop(a, b, len);
         time_end   = rdtsc32();
         printf("%s: done. sum = %d; time delta = %u\n", av[0], sum, time_end - time_start);
+
+        printf("%s: beginning loop\n", av[0]);
+	enable_pmu(0x008);
+        cnt_start = read_pmu();
+        sum = loop(a, b, len);
+        cnt_end   = read_pmu();
+	disable_pmu(0x008);
+        printf("%s: done. sum = %d; event 0x%03x delta = %u\n", av[0], sum, 0x008, cnt_end - cnt_start);
 
         free(a); free(b);
         return 0;
