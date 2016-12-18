@@ -13,4 +13,17 @@ rdtsc32(void)
 #endif
 }
 
+// Ho-Ren(Jack) Chuang
+static inline uint64_t 
+rdtscll(void)
+{
+#if defined(CONFIG_ARM64)
+    uint64_t val = 0;
+    asm volatile("msr cntv_ctl_el0,  %0" : : "r" (val));
+    return val;
+#else
+#error Unsupported architecture/compiler!
+#endif
+}
+
 #endif /* ARMPMU_LIB_H */
