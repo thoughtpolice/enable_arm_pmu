@@ -11,7 +11,9 @@ Beware that the registers set by this module can be reset by the kernel,
 such as when a core goes to sleep. For instance, on a NVidia Jetson TX1,
 one need to disable idle modes by running as root:
 
+```
 for X in $(seq 0 3); do for Y in $(seq 1 6); do echo 1 > /sys/devices/system/cpu/cpu$X/cpuidle/state$Y/disable ; done ; done
+```
 
 # Testing
 
