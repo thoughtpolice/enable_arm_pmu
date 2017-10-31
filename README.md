@@ -1,4 +1,4 @@
-# User-mode access to ARM PMU cycle counters
+# User-mode access to cycle counters in ARM PMU and CNTVCT timer
 
 This repository contains a kernel module and library.
 
@@ -25,6 +25,9 @@ $ sudo make runtests
   * ODROID-U2
     * Exynos 4 Quad, 1.7gHz Cortex-A9
     * Ubuntu/Linaro 12.10 derivative
+  * ODROID-XU4
+    * Exynos 5422 4xA15+4xA7 Octa big.LITTLE, 2GHz
+    * Arch Linux on ARM
 
 TBD: PandaBoard.
 
