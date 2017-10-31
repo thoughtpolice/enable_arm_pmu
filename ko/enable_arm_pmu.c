@@ -19,9 +19,14 @@
 #define PERF_OPT_RESET_CYCLES (2 | 4)
 #define PERF_OPT_DIV64 (8)
 
+// ARMv7-A Architecture Reference Manual B4.1.26
+#define CNTKCTL_PL0VCTEN 0x2
+
 static void
 enable_cpu_counters(void* data)
 {
+        uint32_t r;
+
         printk(KERN_INFO "[" DRVR_NAME "] enabling user-mode PMU access on CPU #%d",
                 smp_processor_id());
 
@@ -30,11 +35,18 @@ enable_cpu_counters(void* data)
         /* Program PMU and enable all counters */
         asm volatile("mcr p15, 0, %0, c9, c12, 0" :: "r"(PERF_DEF_OPTS));
         asm volatile("mcr p15, 0, %0, c9, c12, 1" :: "r"(0x8000000f));
+
+        /* Enable user-mode access to CNTVCT generic timer counter in co-processor CP15 */
+        asm volatile("mrc p15, 0, %0, c14, c1, 0" : "=r"(r)); /* Read CNTKCTL to Rt */
+        r |= CNTKCTL_PL0VCTEN;
+        asm volatile("mcr p15, 0, %0, c14, c1, 0" :: "r"(r)); /* Write Rt to CNTKCTL */
 }
 
 static void
 disable_cpu_counters(void* data)
 {
+        uint32_t r;
+
         printk(KERN_INFO "[" DRVR_NAME "] disabling user-mode PMU access on CPU #%d",
                 smp_processor_id());
 
@@ -43,6 +55,11 @@ disable_cpu_counters(void* data)
         asm volatile("mcr p15, 0, %0, c9, c12, 2" :: "r"(0x8000000f));
         /* Disable user-mode access to counters. */
         asm volatile("mcr p15, 0, %0, c9, c14, 0" :: "r"(0));
+
+        /* Disable user-mode access to CNTVCT generic timer counter in co-processor CP15 */
+        asm volatile("mrc p15, 0, %0, c14, c1, 0" : "=r"(r)); /* Read CNTKCTL to Rt */
+        r &= ~CNTKCTL_PL0VCTEN;
+        asm volatile("mcr p15, 0, %0, c14, c1, 0" :: "r"(r)); /* Write Rt to CNTKCTL */
 }
 
 static int __init
@@ -62,7 +79,7 @@ fini(void)
 
 MODULE_AUTHOR("Austin Seipp <aseipp@pobox.com>");
 MODULE_LICENSE("Dual MIT/GPL");
-MODULE_DESCRIPTION("Enables user-mode access to ARMv7 PMU counters");
+MODULE_DESCRIPTION("Enables user-mode access to cycle counters in PMU and CNTVCT timer on ARMv7");
 MODULE_VERSION("0:0.1-dev");
 module_init(init);
 module_exit(fini);
