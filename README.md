@@ -29,3 +29,5 @@ $ sudo make runtests
         Fedora 21
   * NVidia Jetson TX1
 	L4T 28.1 (based on Ubuntu)
+  * Odroid-C2
+  	Ubuntu 18.04.02
